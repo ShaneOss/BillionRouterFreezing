@@ -15,8 +15,8 @@ while true; do cat /proc/net/ip_conntrack | sed '/src=192\.168\.1\./d'; sleep 1;
 #Watch the output for any IP addresses you don't know and take note of the sport and dport. sport is the source port of the incoming request and dport is the destination port where the request is trying to go to.
 #After you find one, do a quick search to see if it's a bad IP e.g. https://www.abuseipdb.com/check/146.88.241.21
 
-#You can then create a rule in Config/Security/IP Filtering Incoming to block all incoming traffic on that port, or just traffic from that IP on that port, or all traffic from that IP.
-#We'll create 4 rules to block all external traffic for SSDP and SMB.
+#You can then create a rule in Config/Security/IP Filtering Outgoing to block all outgoing traffic on that port, or just traffic from that IP on that port, or all traffic from that IP.
+#We'll create 4 rules to block all outgoing traffic for SSDP and SMB.
 
 #SSDP (Simple Service Discovery Protocol)
 #Create a rule to Block incoming on port dport 1900
@@ -26,11 +26,14 @@ while true; do cat /proc/net/ip_conntrack | sed '/src=192\.168\.1\./d'; sleep 1;
 #Create a rule to Block incoming on port dport 445
 #Create a rule to Block incoming on port sport 445
 
-# E.g. SSDP block incoming to destination
-- Config/Security/IP Filtering Incoming
+# E.g. SSDP block outgoing traffic to destination
+- Config/Security/IP Filtering Outgoing
 - Add button
 - Type a name for Filtername e.g. SSDP_DP
 - In the destination port add 1900
-- Check the Log checkbox (means these events will show in the Security log in Status)
+- DON'T check the Log checkbox (enabling Log will not DROP the request in iptables)
 - Leave everything else as is and click Apply
 #Repeat the process for SSDP sport, and SMB.
+
+N.B. Configuring the above for Incoming will not DROP the requests in iptables, it will actually allow it.
+If you wanted to confirm or test after trying adding them to incoming. You do so from the shell and typing: iptables --list
