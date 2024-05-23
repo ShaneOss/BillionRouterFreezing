@@ -1,0 +1,25 @@
+#Using a Linux machine telnet to your Billion router and redirect the output to a file on your local machine. your_router_ip more than likely 192.168.1.254
+telnet your_router_ip | tee -a -i router_output.txt
+
+#Login using admin and the password
+
+#Enter shell
+sh
+
+#Now we want to see all the incoming connections to the router
+#The only commands of use we have are cat and sed.
+#We also want to exclude our local IPs from the output, so depending on your LAN config you can update 192\.168\.1\ to your relevant subnet. In most cases it will be 192.168.1.
+
+while true; do cat /proc/net/ip_conntrack | sed '/src=192\.168\.1\./d'; sleep 1; done
+
+#Watch the output for any IP addresses you don't know and take note of the sport and dport. sport is the source port of the incoming request and dport is the destination port where the request is trying to go to.
+#After you find one, do a quick search to see if it's a bad IP e.g. https://www.abuseipdb.com/check/146.88.241.21
+#You can then create a rule in Config/Security/IP Filtering Incoming
+
+#SSDP (Simple Service Discovery Protocol)
+#Create a rule to Block incoming on port dport 1900
+#Create a rule to Block incoming on port sport 1900
+
+#SMB
+#Create a rule to Block incoming on port dport 445
+#Create a rule to Block incoming on port sport 445
